@@ -83,6 +83,10 @@ Based on the ngx-admin inspiration, the dashboard provides:
 - Flask-SocketIO (for real-time updates)
 - Optional: systemd for service management
 
+## Who is this tool for?
+
+This tool helps prevent system crashes during memory- and CPU-intensive tasks.
+
 ## License
 
 MIT
