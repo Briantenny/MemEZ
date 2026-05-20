@@ -1,5 +1,10 @@
-# Memory Freeze Tool
+<div align="center" markdown="1">
 
+<img width="150" height="150" alt="ico" src="https://github.com/user-attachments/assets/df0d9742-2312-4da7-9876-a2bdd04b2ca2" />
+
+
+# MemEZ Memory freeze tool
+</div>
 A Linux utility that monitors memory usage and automatically freezes (SIGSTOP) processes consuming excessive memory, resuming them (SIGCONT) when memory pressure subsides. Includes a web dashboard for monitoring.
 
 <img width="1366" height="768" alt="Screenshot_2026-05-21_01_23_34" src="https://github.com/user-attachments/assets/8200aa34-ca25-4c3a-98ec-e1525f37aa25" />
@@ -38,16 +43,14 @@ memfreeze-tool/
    ```bash
    pip install -r requirements.txt
    ```
-3. Configure thresholds in `memfreeze_monitor.py` if needed (default: freeze when system memory > 85%)
-4. Run the monitor:
+3. Quick start:
    ```bash
-   python memfreeze_monitor.py
+   sudo python run.py
    ```
-5. In another terminal, start the dashboard:
-   ```bash
-   python dashboard.py
-   ```
-6. Access dashboard at http://localhost:5000
+4. Access dashboard at http://localhost:5000
+ 
+5. Configure thresholds in `memfreeze_monitor.py` if needed (default: freeze when system memory > 85%)
+
 
 ## Configuration
 
