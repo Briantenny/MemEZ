@@ -2,6 +2,9 @@
 
 A Linux utility that monitors memory usage and automatically freezes (SIGSTOP) processes consuming excessive memory, resuming them (SIGCONT) when memory pressure subsides. Includes a web dashboard for monitoring.
 
+<img width="1366" height="768" alt="Screenshot_2026-05-21_01_23_34" src="https://github.com/user-attachments/assets/8200aa34-ca25-4c3a-98ec-e1525f37aa25" />
+
+
 ## Features
 
 - Real-time memory usage monitoring
