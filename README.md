@@ -86,6 +86,12 @@ Based on the ngx-admin inspiration, the dashboard provides:
 ## Who is this tool for?
 
 This tool helps prevent system crashes during memory- and CPU-intensive tasks.
+- System administrators and DevOps engineers managing server stability and performance.  
+- Software developers running heavy builds, compiles, or local container workloads.  
+- Data scientists and ML engineers executing large model training or data-processing jobs.  
+- QA engineers running extensive test suites or performance tests.  
+- Power users running multiple resource-heavy applications concurrently.  
+- IT support staff who need to troubleshoot and mitigate user-reported slowdowns or crashes.
 
 ## License
 
