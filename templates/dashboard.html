@@ -1,199 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Freeze Tool Dashboard</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MemEZ Tool Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
-        :root {
-            --bg-dark: #0d1117;
-            --bg-surface: #161b22;
-            --bg-muted: #21262d;
-            --text-primary: #c9d1d9;
-            --text-muted: #8b949e;
-            --border-color: #30363d;
-            --accent-blue: #58a6ff;
-            --accent-green: #3fb950;
-            --accent-yellow: #d29922;
-            --accent-red: #f85149;
-            --accent-purple: #bc8cff;
+        :root{
+            --bg:#0f1720;
+            --card:#111827;
+            --muted:#9ca3af;
+            --muted-2:#6b7280;
+            --surface:#0b1220;
+            --accent:#06b6d4;
+            --success:#10b981;
+            --warning:#f59e0b;
+            --danger:#ef4444;
+            --text:#e6eef6;
+            --muted-contrast:#cbd5e1;
+            --table-row:#0b1226;
+            --table-head:#0f1728;
         }
-        
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+        html,body{
+            height:100%;
+            background:linear-gradient(180deg,var(--bg),#071023 120%);
+            color:var(--text);
+            font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
         }
-        
-        .card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1.5rem;
-            overflow: hidden;
+
+        .container{ padding-top:1.5rem; padding-bottom:2rem; }
+
+        .card{
+            background:linear-gradient(180deg,var(--card),#0b1220);
+            border:1px solid rgba(255,255,255,0.04);
+            color:var(--text);
+            border-radius:12px;
+            box-shadow:0 6px 18px rgba(2,6,23,0.6);
+            margin-bottom:1.25rem;
         }
-        
-        .card-header {
-            background-color: var(--bg-muted);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 1.5rem;
+        .card-header{
+            background:transparent;
+            border-bottom:1px solid rgba(255,255,255,0.04);
+            color:var(--muted-contrast);
+            display:flex;
+            align-items:center;
+            gap:1rem;
         }
-        
-        .card-header h5 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--text-primary);
+        .card-title{ color:var(--muted-contrast); font-weight:600; margin:0; }
+
+        .app-header{
+            display:flex;
+            align-items:center;
+            gap:1rem;
+            margin-bottom:0.75rem;
         }
-        
-        .card-body {
-            padding: 1.5rem;
+        .logo {
+            display:inline-flex;
+            align-items:center;
+            gap:0.6rem;
         }
-        
-        .memory-gauge {
-            width: 100%;
-            max-width: 280px;
-            margin: 0 auto;
+        .logo-badge {
+            background:linear-gradient(135deg,var(--accent),#7c3aed);
+            color:#001217;
+            font-weight:800;
+            padding:0.45rem 0.6rem;
+            border-radius:8px;
+            font-size:1.05rem;
+            letter-spacing:0.6px;
+            box-shadow:0 6px 18px rgba(7,11,22,0.6);
         }
-        
+        .app-title {
+            line-height:1;
+        }
+        .app-title h1{
+            margin:0;
+            font-size:1.5rem;
+            font-weight:700;
+            color:var(--text);
+        }
+        .app-title p{ margin:0; color:var(--muted); font-size:0.9rem; }
+
+        .memory-gauge{
+            width:100%;
+            max-width:320px;
+            margin:0 auto;
+            height:200px;
+            padding:10px;
+            border-radius:10px;
+            background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+            border:1px solid rgba(255,255,255,0.03);
+        }
+
+        .text-muted { color:var(--muted) !important; }
+        .badge { font-weight:600; }
+
         .process-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+            font-size:0.92rem;
+            color:var(--muted-contrast);
+            border-collapse:collapse;
         }
-        
-        .process-table th,
-        .process-table td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
+        .process-table thead th{
+            background:linear-gradient(180deg,var(--table-head),rgba(255,255,255,0.02));
+            color:var(--muted-contrast);
+            border-bottom:1px solid rgba(255,255,255,0.03);
+            vertical-align:middle;
+            font-weight:600;
         }
-        
-        .process-table th {
-            background-color: var(--bg-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
+        .process-table tbody tr{
+            background:linear-gradient(180deg,var(--table-row),rgba(255,255,255,0.01));
+            border-bottom:1px solid rgba(255,255,255,0.02);
         }
-        
-        .process-table tbody tr:hover {
-            background-color: var(--bg-muted);
+        .process-table tbody tr:hover{
+            background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
         }
-        
-        .process-table tbody tr.frozen {
-            background-color: rgba(248, 81, 73, 0.1);
-            border-left: 3px solid var(--accent-red);
+        .process-table th, .process-table td{
+            padding:0.55rem 0.75rem;
+            vertical-align:middle;
+            color:var(--muted-contrast);
         }
-        
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
+        .process-table td:nth-child(2){
+            color:var(--text);
+            font-weight:600;
         }
-        
-        .status-active {
-            background-color: var(--accent-green);
+
+        .frozen{
+            background:linear-gradient(90deg, rgba(239,68,68,0.06), rgba(239,68,68,0.02)) !important;
+            color:var(--text) !important;
         }
-        
-        .status-frozen {
-            background-color: var(--accent-red);
+
+        .status-indicator{
+            display:inline-block;
+            width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle;
+            box-shadow:0 1px 4px rgba(0,0,0,0.6);
         }
-        
-        .status-normal {
-            background-color: var(--accent-yellow);
+        .status-active{ background:var(--success); }
+        .status-frozen{ background:var(--danger); }
+        .status-normal{ background:var(--warning); }
+
+        .list-group-item{
+            background:transparent;
+            border:1px solid rgba(255,255,255,0.03);
+            color:var(--muted-contrast);
+            border-radius:8px;
+            margin-bottom:0.5rem;
         }
-        
-        .badge {
-            font-weight: 500;
-            padding: 0.35rem 0.65rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-        }
-        
-        .badge.bg-danger {
-            background-color: var(--accent-red);
-        }
-        
-        .badge.bg-success {
-            background-color: var(--accent-green);
-        }
-        
-        .badge.bg-info {
-            background-color: var(--accent-blue);
-        }
-        
-        .badge.bg-warning {
-            background-color: var(--accent-yellow);
-        }
-        
-        .list-group-item {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
-            padding: 0.75rem 1rem;
-        }
-        
-        .list-group-item:hover {
-            background-color: var(--bg-muted);
-        }
-        
-        h1.display-5 {
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-        
-        .text-muted {
-            color: var(--text-muted) !important;
-        }
-        
-        .fw-bold {
-            font-weight: 600 !important;
-        }
-        
-        .table-responsive {
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
+        .list-group-item h6{ color:var(--text); margin:0; font-weight:700; }
+
+        .fs-4 { font-size:1.35rem; color:var(--text); }
+        .fw-bold { font-weight:800; }
+
+        .badge.bg-danger { background:var(--danger); color:#071216; }
+        .badge.bg-success { background:var(--success); color:#001217; }
+        .badge.bg-info { background:var(--accent); color:#001217; }
+        .badge.bg-secondary { background:#243240; color:var(--muted-contrast); }
+
+        @media (max-width:767px){
+            .memory-gauge{ max-width:260px; height:180px; }
+            .app-header { gap:0.5rem; }
+            .logo-badge { font-size:0.95rem; padding:0.35rem 0.5rem; }
         }
     </style>
 </head>
 <body>
-    <div class="container py-4">
-        <div class="row mb-4">
-            <div class="col-12 text-center">
-                <h1 class="display-5 fw-bold">Memory Freeze Tool</h1>
-                <p class="text-muted">Monitoring system memory and managing resource-intensive processes</p>
+    <div class="container">
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="app-header">
+                    <div class="logo">
+                        <div class="logo-badge">MemEZ</div>
+                    </div>
+                    <div class="app-title">
+                        <h1>Tool Dashboard</h1>
+                        <p class="text-muted">Monitoring system memory and managing resource-intensive processes</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="row">
-            <!-- Memory Gauge -->
+        <div class="row g-3 mb-3">
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Memory Usage</h5>
                     </div>
                     <div class="card-body text-center">
-                        <div id="memoryChartContainer" class="memory-gauge mb-3">
+                        <div id="memoryChartContainer" class="memory-gauge">
                             <canvas id="memoryChart"></canvas>
                         </div>
-                        <div>
-                            <span id="memoryPercent" class="fs-3 fw-bold">0%</span>
+                        <div class="mt-3">
+                            <span id="memoryPercent" class="fs-4 fw-bold">0%</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- System Info -->
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
@@ -209,7 +212,6 @@
                 </div>
             </div>
 
-            <!-- Status Summary -->
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
@@ -225,8 +227,7 @@
             </div>
         </div>
 
-        <div class="row">
-            <!-- Top Processes -->
+        <div class="row g-3">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -235,7 +236,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table process-table" id="processTable">
+                            <table class="table table-hover process-table" id="processTable">
                                 <thead>
                                     <tr>
                                         <th>PID</th>
@@ -247,7 +248,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Rows will be filled by JavaScript -->
                                 </tbody>
                             </table>
                         </div>
@@ -255,7 +255,6 @@
                 </div>
             </div>
 
-            <!-- Frozen Processes -->
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
@@ -263,7 +262,6 @@
                     </div>
                     <div class="card-body">
                         <div id="frozenList" class="list-group">
-                            <!-- List items will be filled by JavaScript -->
                         </div>
                     </div>
                 </div>
@@ -272,13 +270,9 @@
     </div>
 
     <script>
-        // Socket.IO connection
         const socket = io();
-
-        // Chart.js instance for memory gauge
         let memoryChart;
 
-        // Initialize chart when DOM loads
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('memoryChart').getContext('2d');
             memoryChart = new Chart(ctx, {
@@ -288,69 +282,70 @@
                     datasets: [{
                         data: [0, 100],
                         backgroundColor: [
-                            'rgba(248, 81, 73, 0.8)', // Red for used
-                            'rgba(40, 44, 52, 0.6)'   // Dark for free
+                            'rgba(239,68,68,0.85)',
+                            'rgba(99,102,241,0.12)'
                         ],
+                        borderColor: ['rgba(0,0,0,0)','rgba(0,0,0,0)'],
                         borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '75%',
+                    cutout: '72%',
                     plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            enabled: false
-                        }
+                        legend: { display: false },
+                        tooltip: { enabled: false }
                     }
                 }
             });
         });
 
-        // Update dashboard when state updates
         socket.on('state_update', function(data) {
-            updateMemoryGauge(data.memory_percent);
+            updateMemoryGauge(data.memory_percent || 0);
             updateSystemInfo(data);
-            updateProcessTable(data.top_processes, data.frozen_processes);
-            updateFrozenList(data.frozen_processes);
+            updateProcessTable(data.top_processes || [], data.frozen_processes || []);
+            updateFrozenList(data.frozen_processes || [], data.top_processes || []);
             updateStatusSummary(data);
         });
 
         function updateMemoryGauge(percent) {
-            // Update chart data
-            memoryChart.data.datasets[0].data = [percent, 100 - percent];
-            memoryChart.update();
-
-            // Update text
+            percent = Math.max(0, Math.min(100, percent));
+            if (memoryChart && memoryChart.data){
+                memoryChart.data.datasets[0].data = [percent, 100 - percent];
+                memoryChart.update();
+            }
             document.getElementById('memoryPercent').textContent = percent.toFixed(1) + '%';
 
-            // Change color based on threshold
             const chartContainer = document.getElementById('memoryChartContainer');
             if (percent >= 85) {
-                chartContainer.style.border = '2px solid var(--accent-red)';
+                chartContainer.style.boxShadow = '0 6px 20px rgba(239,68,68,0.12)';
             } else if (percent >= 70) {
-                chartContainer.style.border = '2px solid var(--accent-yellow)';
+                chartContainer.style.boxShadow = '0 6px 20px rgba(245,158,11,0.08)';
             } else {
-                chartContainer.style.border = '2px solid var(--accent-green)';
+                chartContainer.style.boxShadow = '0 6px 20px rgba(16,185,129,0.06)';
             }
         }
 
         function updateSystemInfo(data) {
-            document.getElementById('cpuPercent').textContent = data.system_info.cpu_percent ? 
+            document.getElementById('cpuPercent').textContent = data.system_info && data.system_info.cpu_percent ? 
                 data.system_info.cpu_percent.toFixed(1) + '%' : 'N/A';
             
-            const uptimeSeconds = Date.now()/1000 - data.system_info.boot_time;
-            const hours = Math.floor(uptimeSeconds / 3600);
-            const minutes = Math.floor((uptimeSeconds % 3600) / 60);
-            document.getElementById('uptime').textContent = 
-                `${hours}h ${minutes}m`;
-            
-            const lastUpdate = new Date(data.timestamp * 1000);
-            document.getElementById('lastUpdate').textContent = 
-                lastUpdate.toLocaleTimeString();
+            if (data.system_info && data.system_info.boot_time){
+                const uptimeSeconds = Date.now()/1000 - data.system_info.boot_time;
+                const hours = Math.floor(uptimeSeconds / 3600);
+                const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+                document.getElementById('uptime').textContent = `${hours}h ${minutes}m`;
+            } else {
+                document.getElementById('uptime').textContent = 'N/A';
+            }
+
+            if (data.timestamp){
+                const lastUpdate = new Date(data.timestamp * 1000);
+                document.getElementById('lastUpdate').textContent = lastUpdate.toLocaleTimeString();
+            } else {
+                document.getElementById('lastUpdate').textContent = 'Never';
+            }
         }
 
         function updateProcessTable(topProcesses, frozenPids) {
@@ -360,25 +355,22 @@
             topProcesses.forEach(proc => {
                 const isFrozen = frozenPids.includes(proc.pid);
                 const row = document.createElement('tr');
-                if (isFrozen) {
-                    row.classList.add('frozen');
-                }
-                
+                if (isFrozen) row.classList.add('frozen');
+
                 row.innerHTML = `
                     <td>${proc.pid}</td>
-                    <td>${proc.name}</td>
-                    <td>${proc.username || 'N/A'}</td>
-                    <td>${proc.memory_mb.toFixed(1)}</td>
-                    <td>${proc.memory_percent.toFixed(1)}%</td>
+                    <td>${escapeHtml(proc.name || 'unknown')}</td>
+                    <td>${escapeHtml(proc.username || 'N/A')}</td>
+                    <td>${(proc.memory_mb || 0).toFixed(1)}</td>
+                    <td>${(proc.memory_percent || 0).toFixed(1)}%</td>
                     <td>
                         <span class="status-indicator ${isFrozen ? 'status-frozen' : 'status-active'}"></span>
-                        ${isFrozen ? 'FROZEN' : 'ACTIVE'}
+                        <span style="vertical-align:middle; color:var(--muted-contrast); font-weight:700;">${isFrozen ? 'FROZEN' : 'ACTIVE'}</span>
                     </td>
                 `;
                 tbody.appendChild(row);
             });
 
-            // Update freeze status badge
             const freezeStatus = document.getElementById('freezeStatus');
             if (frozenPids.length > 0) {
                 freezeStatus.textContent = `${frozenPids.length} processes frozen`;
@@ -389,33 +381,47 @@
             }
         }
 
-        function updateFrozenList(frozenPids) {
+        function updateFrozenList(frozenPids, topProcesses = []) {
             const list = document.getElementById('frozenList');
             list.innerHTML = '';
 
-            if (frozenPids.length === 0) {
+            if (!frozenPids || frozenPids.length === 0) {
                 list.innerHTML = '<p class="text-center text-muted">No frozen processes</p>';
                 return;
             }
 
-            // We don't have process names in frozenPids alone, so we'd need to look them up
-            // For simplicity, we'll just show PIDs (in a real app we'd correlate with top_processes)
+            const procMap = {};
+            (topProcesses || []).forEach(p => { procMap[p.pid] = p; });
+
             frozenPids.forEach(pid => {
+                const p = procMap[pid];
+                const name = p ? p.name : 'unknown';
+                const mem = p ? (p.memory_mb || 0).toFixed(1) + ' MB' : '';
                 const item = document.createElement('li');
                 item.className = 'list-group-item';
                 item.innerHTML = `
                     <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1">PID: ${pid}</h6>
-                        <small class="text-muted">Frozen</small>
+                        <h6 class="mb-1">PID: ${pid} — ${escapeHtml(name)}</h6>
+                        <small class="text-muted">${mem}</small>
                     </div>
+                    <small class="text-muted">Status: <span style="color:var(--danger); font-weight:700;">FROZEN</span></small>
                 `;
                 list.appendChild(item);
             });
         }
 
         function updateStatusSummary(data) {
-            document.getElementById('frozenCount').textContent = data.frozen_processes.length;
-            document.getElementById('topCount').textContent = data.top_processes.length;
+            document.getElementById('frozenCount').textContent = (data.frozen_processes || []).length;
+            document.getElementById('topCount').textContent = (data.top_processes || []).length;
+        }
+
+        function escapeHtml(str){
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
         }
     </script>
 </body>
