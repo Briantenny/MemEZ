@@ -1,4 +1,4 @@
-# MemEZ Memory freeze tool
+# Memory Freeze Tool
 
 A Linux utility that monitors memory usage and automatically freezes (SIGSTOP) processes consuming excessive memory, resuming them (SIGCONT) when memory pressure subsides. Includes a web dashboard for monitoring.
 
@@ -46,11 +46,6 @@ memfreeze-tool/
    ```
 6. Access dashboard at http://localhost:5000
 
-7. Quick start:
-   ```bash
-   sudo python run.py
-   ```
-
 ## Configuration
 
 Adjust these constants in `memfreeze_monitor.py`:
@@ -70,7 +65,7 @@ Adjust these constants in `memfreeze_monitor.py`:
 
 ## Dashboard
 
-The dashboard provides:
+Based on the ngx-admin inspiration, the dashboard provides:
 - Real-time memory gauge
 - Process tables with search/sort
 - Visual indication of frozen processes
